@@ -182,12 +182,18 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-h
 
 <nav class="nav">
   <div class="nav-left">
-    <img class="nav-logo-img" src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7c/Tzu_Chi_Foundation_Logo.svg/200px-Tzu_Chi_Foundation_Logo.svg.png"
-      onerror="this.onerror=null;this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2248%22 fill=%22%232d6a4f%22/><text x=%2250%22 y=%2263%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2244%22 font-family=%22serif%22>慈</text></svg>'" alt="Tzu Chi">
+    <img class="nav-logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Tzu_Chi_Foundation.svg/200px-Tzu_Chi_Foundation.svg.png"
+      alt="Tzu Chi"
     <div class="nav-logo">Longevity <span>Courtyard</span><small>Tzu Chi · Batch 2</small></div>
   </div>
-  <div class="nav-member" id="navMemberInfo" style="display:none">
+  <div style="display:flex;align-items:center;gap:.6rem">
+    <button id="langBtn" onclick="toggleLang()" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:white;border-radius:999px;padding:.3rem .8rem;font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap">中文</button>
+  <div style="display:flex;align-items:center;gap:.7rem">
+    <button id="langToggle" onclick="toggleLang()" style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);color:white;border-radius:999px;padding:.3rem .8rem;font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:700;cursor:pointer;white-space:nowrap">中文</button>
+    <div class="nav-member" id="navMemberInfo" style="display:none">
     <strong id="navMemberName">—</strong><span id="navLockStatus" style="font-size:.7rem;color:var(--jade3)">🔓 Unlocked</span>
+  </div>
+    </div>
   </div>
 </nav>
 
@@ -198,7 +204,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-h
 
 <div class="main">
   <div class="hero">
-    <img class="hero-logo" src="https://upload.wikimedia.org/wikipedia/en/thumb/7/7c/Tzu_Chi_Foundation_Logo.svg/200px-Tzu_Chi_Foundation_Logo.svg.png" onerror="this.style.display='none'" alt="Tzu Chi">
+    <img class="hero-logo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Tzu_Chi_Foundation.svg/200px-Tzu_Chi_Foundation.svg.png" alt="Tzu Chi">
     <div class="hero-text">
       <div class="hero-badge">Batch 2 · Members Only</div>
       <h1>Longevity Courtyard</h1>
@@ -312,17 +318,17 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-h
         <div id="miaTable" style="overflow-x:auto"></div>
       </div>
       <div class="admin-section">
-        <h3>📥 Export Weekly Timetable</h3>
+        <h3 id='exportHeading'>📥 Export Weekly Timetable</h3>
         <p style="font-size:.85rem;color:var(--mid);margin-bottom:1rem">Download a formatted timetable image to share in your group chat.</p>
         <div style="display:flex;gap:.7rem;flex-wrap:wrap;align-items:center">
           <select id="exportWeekSelect" style="border:1.5px solid var(--line);border-radius:var(--radius-sm);padding:.5rem .9rem;font-family:'Nunito',sans-serif;font-size:.88rem;background:var(--bg)">
             <option value="0">This Week</option>
             <option value="1">Next Week</option>
           </select>
-          <button class="btn btn-jade btn-sm" style="width:auto" onclick="exportTimetable()">📥 Download Timetable (PNG)</button>
+          <button class="btn btn-jade btn-sm" style="width:auto" onclick="exportTimetable()" id='exportDlBtn'>📥 Download Timetable (PNG)</button>
         </div>
       </div>
-            <button class="btn btn-outline btn-sm" style="width:auto" onclick="adminLogout()">Logout</button>
+            <button class="btn btn-outline btn-sm" style="width:auto" onclick="adminLogout()">${t('logout')}</button>
     </div>
   </div>
 </div>
@@ -334,7 +340,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-h
     <h2 id="modalTitle">Confirm</h2>
     <p id="modalBody"></p>
     <div class="modal-btns">
-      <button class="btn btn-outline" style="width:auto" onclick="closeModal()">Back</button>
+      <button class="btn btn-outline" style="width:auto" onclick="closeModal()" id="modalBackBtn">Back</button>
       <button class="btn btn-jade" id="modalConfirmBtn" style="width:auto">Confirm</button>
     </div>
   </div>
@@ -344,12 +350,12 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-h
 
 <div class="modal-overlay hidden" id="memberLoginModal">
   <div class="modal">
-    <h2>🔒 Member Login</h2>
+    <h2>🔒 <span id='memberLoginTitle'>Member Login</span></h2>
     <p id="memberLoginName" style="font-weight:700;color:var(--ink);margin-bottom:.8rem"></p>
     <input type="password" id="memberPwInput" placeholder="Enter your password" onkeydown="if(event.key==='Enter')submitMemberLogin()">
     <div class="modal-btns">
-      <button class="btn btn-outline" style="width:auto" onclick="closeMemberLogin()">Cancel</button>
-      <button class="btn btn-jade" style="width:auto" onclick="submitMemberLogin()">Unlock</button>
+      <button class="btn btn-outline" style="width:auto" onclick="closeMemberLogin()" id="memberLoginCancelBtn">取消 / Cancel</button>
+      <button class="btn btn-jade" style="width:auto" onclick="submitMemberLogin()" id="memberLoginOkBtn">解锁 / Unlock</button>
     </div>
   </div>
 </div>
@@ -447,8 +453,9 @@ let editingPwMember = '';
 // DATE HELPERS
 // ═══════════════════════════════════════════
 function now(){ return new Date(); }
-function toYMD(d){ return d.toISOString().split('T')[0]; }
+function toYMD(d){ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+dd; }
 function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function parseYMD(ymd){ const[y,m,d]=ymd.split('-').map(Number); return new Date(y,m-1,d); }
 function getWeekMonday(off){
   const t=now(); const dow=t.getDay();
   const mon=addDays(t,(dow===0?-6:1-dow)+off*7);
@@ -459,9 +466,10 @@ function timeLabel(t){
   const[h,m]=t.split(':').map(Number);
   return `${h%12||12}:${String(m).padStart(2,'0')}${h<12?'am':'pm'}`;
 }
-function isSlotPast(ymd,t){ return new Date(ymd+'T'+t+':00')<now(); }
-function isBookingClosed(ymd,t){ const s=new Date(ymd+'T'+t+':00'); return now()>=new Date(s-5*60*1000); }
-function canCancelSlot(ymd,t){ const s=new Date(ymd+'T'+t+':00'); return now()<new Date(s-60*60*1000); }
+function slotDateTime(ymd,t){ const[y,mo,d]=ymd.split('-').map(Number);const[h,mi]=t.split(':').map(Number);return new Date(y,mo-1,d,h,mi,0); }
+function isSlotPast(ymd,t){ return slotDateTime(ymd,t)<now(); }
+function isBookingClosed(ymd,t){ const s=slotDateTime(ymd,t); return now()>=new Date(s-5*60*1000); }
+function canCancelSlot(ymd,t){ const s=slotDateTime(ymd,t); return now()<new Date(s-60*60*1000); }
 function isBlocked(ymd,t){ return blockedSlots.some(b=>b.date===ymd&&(!b.time||b.time===t)); }
 function isDayBlocked(ymd){ return blockedSlots.some(b=>b.date===ymd&&!b.time); }
 
@@ -498,6 +506,7 @@ async function loadAll(){
 async function init(){
   try{
     await loadAll();
+    applyLang();
     populateMemberDropdown();
     renderSchedule();
     showAnnounceBanner();
@@ -539,7 +548,7 @@ function updateNavMember(){
   if(!currentMember){ el.style.display='none'; return; }
   el.style.display='block';
   document.getElementById('navMemberName').textContent=currentMember;
-  document.getElementById('navLockStatus').textContent=memberUnlocked?'🔓 Unlocked':'🔒 Locked';
+  document.getElementById('navLockStatus').textContent=memberUnlocked?t('unlocked'):'🔒 Locked';
   document.getElementById('navLockStatus').style.color=memberUnlocked?'var(--jade3)':'var(--warn)';
 }
 
@@ -548,10 +557,10 @@ function updateUnlockBtn(){
   if(!currentMember){ btn.style.display='none'; return; }
   btn.style.display='inline-block';
   if(memberUnlocked){
-    btn.textContent='🔓 Unlocked';
+    btn.textContent=t('unlocked');
     btn.className='unlock-btn unlocked';
   } else {
-    btn.textContent='🔒 Enter Password';
+    btn.textContent=t('enterPw');
     btn.className='unlock-btn';
   }
 }
@@ -559,7 +568,8 @@ function updateUnlockBtn(){
 function showMemberLogin(){
   if(memberUnlocked) return;
   if(!currentMember){ showToast('Please select your name first.','error'); return; }
-  document.getElementById('memberLoginName').textContent='Welcome, '+currentMember+'!';
+  document.getElementById('memberLoginTitle').textContent=t('memberLogin');
+  document.getElementById('memberLoginName').textContent=t('welcome')+', '+currentMember+'!';
   document.getElementById('memberPwInput').value='';
   document.getElementById('memberLoginModal').classList.remove('hidden');
   setTimeout(()=>document.getElementById('memberPwInput').focus(),100);
@@ -574,7 +584,7 @@ function submitMemberLogin(){
   const m=members.find(x=>x.name===currentMember);
   if(!m){ closeMemberLogin(); return; }
   if(m.password && pw!==m.password){
-    showToast('Wrong password. Try again.','error');
+    showToast(t('wrongPw'),'error');
     document.getElementById('memberPwInput').value='';
     return;
   }
@@ -584,7 +594,7 @@ function submitMemberLogin(){
   updateNavMember();
   updateUnlockBtn();
   renderSchedule();
-  showToast(`Welcome, ${currentMember}! 🎉`,'success');
+  showToast(t('welcomeMsg', currentMember),'success');
 }
 
 // ═══════════════════════════════════════════
@@ -595,7 +605,7 @@ function renderSchedule(){
   grid.innerHTML='';
   const mon=getWeekMonday(currentWeekOffset);
   const fri=addDays(mon,4);
-  document.getElementById('weekLabel').innerHTML=(currentWeekOffset===0?'This Week':'Next Week')+`<small>${fmtDate(mon)} – ${fmtDate(fri)}</small>`;
+  document.getElementById('weekLabel').innerHTML=(currentWeekOffset===0?t('thisWeek'):t('nextWeek'))+`<small>${fmtDate(mon)} – ${fmtDate(fri)}</small>`;
   document.getElementById('prevWeekBtn').disabled=currentWeekOffset<=0;
   document.getElementById('nextWeekBtn').disabled=currentWeekOffset>=1;
 
@@ -615,13 +625,13 @@ function renderSchedule(){
       card.appendChild(msg); grid.appendChild(card); return;
     }
     const slotsList=document.createElement('div'); slotsList.className='slots-list';
-    sch.times.forEach(t=>{
-      const slotBlocked=isBlocked(ymd,t);
-      const past=isSlotPast(ymd,t);
-      const closed=isBookingClosed(ymd,t);
-      const myBooking=currentMember&&bookings.find(b=>b.member===currentMember&&b.date===ymd&&b.time===t);
+    sch.times.forEach(tm=>{
+      const slotBlocked=isBlocked(ymd,tm);
+      const past=isSlotPast(ymd,tm);
+      const closed=isBookingClosed(ymd,tm);
+      const myBooking=currentMember&&bookings.find(b=>b.member===currentMember&&b.date===ymd&&b.time===tm);
       const bookedToday=currentMember&&!myBooking&&bookings.find(b=>b.member===currentMember&&b.date===ymd);
-      const totalBooked=bookings.filter(b=>b.date===ymd&&b.time===t).length;
+      const totalBooked=bookings.filter(b=>b.date===ymd&&b.time===tm).length;
       const isFull=totalBooked>=SLOT_LIMIT;
       const slotEl=document.createElement('div');
       let cls='slot';
@@ -630,27 +640,34 @@ function renderSchedule(){
       const canBook=currentMember&&memberUnlocked&&!past&&!closed&&!slotBlocked&&!myBooking&&!bookedToday&&!isFull;
       if(canBook) cls+=' bookable';
       slotEl.className=cls;
-      // slot info text
+      const remaining=SLOT_LIMIT-totalBooked;
+      const countLabel=lang==='zh'?`${totalBooked}/${SLOT_LIMIT} 已约`:`${totalBooked}/${SLOT_LIMIT} booked`;
+      const leftLabel=lang==='zh'?`剩${remaining}`:`${remaining} left`;
       let infoTxt='';
       if(!past&&!slotBlocked){
-        const remaining=SLOT_LIMIT-totalBooked;
-        infoTxt=isFull?`<span class="slot-info full">Full (${SLOT_LIMIT}/${SLOT_LIMIT})</span>`:`<span class="slot-info">${totalBooked}/${SLOT_LIMIT} booked${remaining<=3&&remaining>0?' · '+remaining+' left':''}</span>`;
+        infoTxt=isFull
+          ?`<span class="slot-info full">${t('full')} (${SLOT_LIMIT}/${SLOT_LIMIT})</span>`
+          :`<span class="slot-info">${countLabel}${remaining<=3&&remaining>0?' · '+leftLabel:''}</span>`;
       } else {
-        infoTxt=`<span class="slot-info">${totalBooked} booked</span>`;
+        infoTxt=`<span class="slot-info">${totalBooked}/${SLOT_LIMIT}</span>`;
       }
       let act='';
-      if(slotBlocked) act=`<span class="pill pill-past">Blocked</span>`;
-      else if(past) act=`<span class="pill pill-past">Past</span>`;
+      if(slotBlocked) act=`<span class="pill pill-past">${t('blocked')}</span>`;
+      else if(past) act=`<span class="pill pill-past">${t('past')}</span>`;
       else if(myBooking){
-        const cc=canCancelSlot(ymd,t);
-        act=`<span class="pill pill-booked">✓ Booked</span>${memberUnlocked&&cc?`<button class="pill-cancel" onclick="promptCancel('${ymd}','${t}','${sch.label.replace(/'/g,"\\'")}')">Cancel</button>`:memberUnlocked?'<span style="font-size:.68rem;color:var(--soft)">No cancel</span>':'<span style="font-size:.68rem;color:var(--soft)">🔒 Locked</span>'}`;
-      } else if(!currentMember) act=`<span class="pill pill-past" style="font-size:.68rem">Select name</span>`;
-      else if(!memberUnlocked) act=`<button class="pill-book" style="background:var(--warn)" onclick="showMemberLogin()">🔒 Login</button>`;
-      else if(closed) act=`<span class="pill pill-past">Closed</span>`;
-      else if(isFull) act=`<span class="pill pill-full">Full</span>`;
-      else if(bookedToday) act=`<span class="pill pill-full">Day taken</span>`;
-      else act=`<button class="pill-book" onclick="promptBook('${ymd}','${t}','${sch.label.replace(/'/g,"\\'")}','${sch.type}')">Book</button>`;
-      slotEl.innerHTML=`<span class="slot-time">${timeLabel(t)}</span>${infoTxt}<span class="slot-action">${act}</span>`;
+        const cc=canCancelSlot(ymd,tm);
+        act=`<span class="pill pill-booked">${t('booked')}</span>`+(memberUnlocked&&cc
+          ?`<button class="pill-cancel" onclick="promptCancel('${ymd}','${tm}','${sch.label.replace(/'/g,"\'")}')">` + t('cancel') + `</button>`
+          :memberUnlocked
+            ?`<span style="font-size:.68rem;color:var(--soft)">${t('noCancel')}</span>`
+            :`<span style="font-size:.68rem;color:var(--soft)">${t('lockedLabel')}</span>`);
+      } else if(!currentMember) act=`<span class="pill pill-past" style="font-size:.68rem">${t('loginFirst')}</span>`;
+      else if(!memberUnlocked) act=`<button class="pill-book" style="background:var(--warn)" onclick="showMemberLogin()">${t('lockLogin')}</button>`;
+      else if(closed) act=`<span class="pill pill-past">${t('closed')}</span>`;
+      else if(isFull) act=`<span class="pill pill-full">${t('full')}</span>`;
+      else if(bookedToday) act=`<span class="pill pill-full">${t('dayTaken')}</span>`;
+      else act=`<button class="pill-book" onclick="promptBook('${ymd}','${tm}','${sch.label.replace(/'/g,"\'")}','${sch.type}')">${t('book')}</button>`;
+      slotEl.innerHTML=`<span class="slot-time">${timeLabel(tm)}</span>${infoTxt}<span class="slot-action">${act}</span>`;
       slotsList.appendChild(slotEl);
     });
     card.appendChild(slotsList); grid.appendChild(card);
@@ -660,38 +677,38 @@ function renderSchedule(){
 // ═══════════════════════════════════════════
 // BOOKING ACTIONS
 // ═══════════════════════════════════════════
-function promptBook(ymd,t,label,type){
-  if(!currentMember){showToast('Select your name first!','error');return;}
+function promptBook(ymd,tm,label,type){
+  if(!currentMember){showToast(lang==='zh'?'请先选择您的名字！':'Select your name first!','error');return;}
   if(!memberUnlocked){showMemberLogin();return;}
-  pendingAction={action:'book',ymd,t,label,classType:type};
-  document.getElementById('modalTitle').textContent='Confirm Booking';
-  document.getElementById('modalBody').innerHTML=`Booking for <strong>${currentMember}</strong><br>📌 ${label}<br>📅 ${fmtDate(new Date(ymd))} at <strong>${timeLabel(t)}</strong>`;
-  document.getElementById('modalConfirmBtn').textContent='Book Now';
+  pendingAction={action:'book',ymd,t:tm,label,classType:type};
+  document.getElementById('modalTitle').textContent=t('confirmBooking');
+  document.getElementById('modalBody').innerHTML=`${lang==='zh'?'预约人':'Booking for'}: <strong>${currentMember}</strong><br>📌 ${label}<br>📅 ${fmtDate(parseYMD(ymd))} ${lang==='zh'?'时间':'at'} <strong>${timeLabel(tm)}</strong>`;
+  document.getElementById('modalConfirmBtn').textContent=t('bookNow');
   document.getElementById('modalConfirmBtn').onclick=executeAction;
   document.getElementById('confirmModal').classList.remove('hidden');
 }
-function promptCancel(ymd,t,label){
+function promptCancel(ymd,tm,label){
   if(!memberUnlocked){showMemberLogin();return;}
-  pendingAction={action:'cancel',ymd,t,label};
-  document.getElementById('modalTitle').textContent='Cancel Booking';
-  document.getElementById('modalBody').innerHTML=`Cancel booking:<br><strong>${label}</strong><br>📅 ${fmtDate(new Date(ymd))} at <strong>${timeLabel(t)}</strong>`;
-  document.getElementById('modalConfirmBtn').textContent='Yes, Cancel';
+  pendingAction={action:'cancel',ymd,t:tm,label};
+  document.getElementById('modalTitle').textContent=t('confirmCancel');
+  document.getElementById('modalBody').innerHTML=`${lang==='zh'?'取消预约':'Cancel booking'}:<br><strong>${label}</strong><br>📅 ${fmtDate(parseYMD(ymd))} ${lang==='zh'?'时间':'at'} <strong>${timeLabel(tm)}</strong>`;
+  document.getElementById('modalConfirmBtn').textContent=t('yesCancel');
   document.getElementById('modalConfirmBtn').onclick=executeAction;
   document.getElementById('confirmModal').classList.remove('hidden');
 }
 async function executeAction(){
   closeModal();
   if(!pendingAction) return;
-  const{action,ymd,t,label,classType}=pendingAction; pendingAction=null;
+  const{action,ymd,t:tm,label,classType}=pendingAction; pendingAction=null;
   try{
     if(action==='book'){
-      await dbInsert('bookings',{member:currentMember,date:ymd,time:t,class_type:classType,class_label:label});
-      showToast(`✅ Booked! ${timeLabel(t)} on ${fmtDate(new Date(ymd))}`,'success');
+      await dbInsert('bookings',{member:currentMember,date:ymd,time:tm,class_type:classType,class_label:label});
+      showToast(t('booked_toast', timeLabel(tm), fmtDate(parseYMD(ymd))),'success');
     } else if(action==='cancel'){
-      const b=bookings.find(bk=>bk.member===currentMember&&bk.date===ymd&&bk.time===t);
+      const b=bookings.find(bk=>bk.member===currentMember&&bk.date===ymd&&bk.time===tm);
       if(!b) return;
       await dbDelete('bookings','id=eq.'+b.id);
-      showToast('Booking cancelled.','warn');
+      showToast(t('cancelled'),'warn');
     }
     await loadAll(); renderSchedule(); renderMyBookings();
   }catch(e){console.error(e);showToast('Error: '+e.message,'error');}
@@ -703,19 +720,19 @@ function closeModal(){ document.getElementById('confirmModal').classList.add('hi
 // ═══════════════════════════════════════════
 function renderMyBookings(){
   const el=document.getElementById('myBookingsContent');
-  if(!currentMember){el.innerHTML='<div class="bookings-empty"><div class="empty-icon">👤</div><p>Select your name to see your bookings.</p></div>';return;}
-  if(!memberUnlocked){el.innerHTML='<div class="bookings-empty"><div class="empty-icon">🔒</div><p>Please <strong>enter your password</strong> to view your bookings.</p></div>';return;}
+  if(!currentMember){el.innerHTML=`<div class="bookings-empty"><div class="empty-icon">👤</div><p>${t('selectToSee')}</p></div>`;return;}
+  if(!memberUnlocked){el.innerHTML=`<div class="bookings-empty"><div class="empty-icon">🔒</div><p>${t('loginToSee')}</p></div>`;return;}
   const mine=bookings.filter(b=>b.member===currentMember).sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
-  if(!mine.length){el.innerHTML='<div class="bookings-empty"><div class="empty-icon">🗓</div><p>No bookings yet! Tap <strong>Book Class</strong> to get started.</p></div>';return;}
+  if(!mine.length){el.innerHTML=`<div class="bookings-empty"><div class="empty-icon">🗓</div><p>${t('noBookings')}</p></div>`;return;}
   let html=`<h3 style="font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:1rem;color:var(--jade)">Bookings for ${currentMember}</h3>`;
   mine.forEach(b=>{
     const past=isSlotPast(b.date,b.time);
     const cc=!past&&canCancelSlot(b.date,b.time);
     html+=`<div class="booking-card">
-      <div class="booking-card-left"><strong>${b.classLabel}</strong><span>📅 ${fmtDate(new Date(b.date))} at ${timeLabel(b.time)}</span></div>
+      <div class="booking-card-left"><strong>${b.classLabel}</strong><span>📅 ${fmtDate(parseYMD(b.date))} at ${timeLabel(b.time)}</span></div>
       <div style="display:flex;align-items:center;gap:.5rem">
-        <span class="status-tag ${past?'status-past':'status-upcoming'}">${past?'Past':'Upcoming'}</span>
-        ${!past?`<button class="btn-cancel-booking" ${cc?'':'disabled title="Cannot cancel within 1hr"'} onclick="promptCancel('${b.date}','${b.time}','${b.classLabel.replace(/'/g,"\\'")}')">Cancel</button>`:''}
+        <span class="status-tag ${past?'status-past':'status-upcoming'}">${past?t('past'):t('upcoming')}</span>
+        ${!past?`<button class="btn-cancel-booking" ${cc?'':'disabled title="Cannot cancel within 1hr"'} onclick="promptCancel('${b.date}','${b.time}','${b.classLabel.replace(/'/g,"\\'")}')">" + t('cancel') + "</button>`:''}
       </div></div>`;
   });
   el.innerHTML=html;
@@ -726,7 +743,7 @@ function updateMiaBadge(){
   if(!currentMember){b.style.display='none';return;}
   const c=miaRecord[currentMember]||0;
   b.style.display='inline-block';
-  b.textContent=`${c}/3 MIA`;
+  b.textContent=`${c}/3 ${t('miaOf')}`;
   b.className='mia-badge '+(c>=3?'mia-danger':c>=2?'mia-warn':'mia-ok');
 }
 function changeWeek(dir){ currentWeekOffset=Math.max(0,Math.min(1,currentWeekOffset+dir)); renderSchedule(); }
@@ -832,15 +849,15 @@ function renderAdminBookings(){
   const fw=document.getElementById('adminFilterWeek').value;
   let data=[...bookings];
   if(fm) data=data.filter(b=>b.member===fm);
-  if(fw==='this'){const mon=getWeekMonday(0),sun=addDays(mon,6);data=data.filter(b=>{const d=new Date(b.date);return d>=mon&&d<=sun;});}
-  if(fw==='next'){const mon=getWeekMonday(1),sun=addDays(mon,6);data=data.filter(b=>{const d=new Date(b.date);return d>=mon&&d<=sun;});}
+  if(fw==='this'){const mon=getWeekMonday(0),sun=addDays(mon,6);data=data.filter(b=>{const d=parseYMD(b.date);return d>=mon&&d<=sun;});}
+  if(fw==='next'){const mon=getWeekMonday(1),sun=addDays(mon,6);data=data.filter(b=>{const d=parseYMD(b.date);return d>=mon&&d<=sun;});}
   data.sort((a,b)=>a.date.localeCompare(b.date)||a.time.localeCompare(b.time));
   if(!data.length){document.getElementById('adminBookingsTable').innerHTML='<p style="font-size:.83rem;color:var(--soft);text-align:center;padding:1rem">No bookings.</p>';return;}
   let h=`<table class="admin-table"><thead><tr><th>Member</th><th>Class</th><th>Date</th><th>Time</th><th>Actions</th></tr></thead><tbody>`;
   data.forEach(b=>{
     const past=isSlotPast(b.date,b.time);
     h+=`<tr><td>${b.member}</td><td>${b.classType==='strength'?'💪':'🧘'} ${b.classType==='strength'?'Strength':'Stretch'}</td>
-    <td>${fmtDate(new Date(b.date))}</td><td>${timeLabel(b.time)}</td>
+    <td>${fmtDate(parseYMD(b.date))}</td><td>${timeLabel(b.time)}</td>
     <td style="white-space:nowrap">
       <button class="btn btn-danger btn-sm" onclick="adminRemoveBooking(${b.id})">Remove</button>
       ${!past?`<button class="btn btn-sm btn-warn" style="margin-left:.3rem" onclick="adminMarkMIA('${b.member}',${b.id})">MIA</button>`:''}
@@ -1196,6 +1213,192 @@ function exportTimetable(){
   }, 'image/png');
 }
 
+
+// ═══════════════════════════════════════════
+// BILINGUAL SUPPORT
+// ═══════════════════════════════════════════
+let currentLang = 'en';
+const T = {
+  en: {
+    selectMember:'Select Member', chooseYour:'— Choose your name —',
+    enterPw:'🔒 Enter Password', unlocked:'🔓 Unlocked',
+    bookClass:'📅 Book Class', myBookings:'🗓 My Bookings',
+    rules:'📋 Rules', admin:'🔑 Admin',
+    thisWeek:'This Week', nextWeek:'Next Week',
+    book:'Book', booked:'✓ Booked', cancel:'Cancel',
+    past:'Past', closed:'Closed', full:'Full', dayTaken:'Day taken', blocked:'Blocked',
+    selectFirst:'Select name', loginFirst:'🔒 Login',
+    noCancel:'No cancel', locked:'🔒 Locked',
+    confirmBooking:'Confirm Booking', confirmCancel:'Cancel Booking',
+    confirmBtn:'Book Now', cancelBtn:'Yes, Cancel', back:'Back',
+    bookingFor:'Booking for', bookingCancelled:'Booking cancelled.',
+    welcome:'Welcome', memberLogin:'Member Login',
+    enterYourPw:'Enter your password', unlock:'Unlock',
+    wrongPw:'Wrong password. Try again.',
+    noBookings:'No bookings yet! Tap Book Class to get started.',
+    selectToSee:'Select your name to see your bookings.',
+    loginToSee:'Please enter your password to view your bookings.',
+    upcoming:'Upcoming', bokedSlot:'booked', left:'left',
+    heroSub:'Book your weekly fitness classes — Functional Strength Training & Stretch & Flow',
+    strength:'Strength', stretch:'Stretch & Flow',
+    miaOf:'MIA', logout:'Logout',
+    exportTitle:'📥 Export Weekly Timetable',
+    exportBtn:'📥 Download Timetable (PNG)',
+    rulesTitle:'📅 Class Schedule',
+    batch:'BATCH 2 · MEMBERS ONLY',
+  },
+  zh: {
+    selectMember:'选择会员', chooseYour:'— 请选择您的姓名 —',
+    enterPw:'🔒 输入密码', unlocked:'🔓 已解锁',
+    bookClass:'📅 预约课程', myBookings:'🗓 我的预约',
+    rules:'📋 规则', admin:'🔑 管理员',
+    thisWeek:'本周', nextWeek:'下周',
+    book:'预约', booked:'✓ 已预约', cancel:'取消',
+    past:'已过期', closed:'已截止', full:'已满', dayTaken:'当天已预约', blocked:'已封锁',
+    selectFirst:'请先选择姓名', loginFirst:'🔒 请登录',
+    noCancel:'无法取消', locked:'🔒 已锁定',
+    confirmBooking:'确认预约', confirmCancel:'取消预约',
+    confirmBtn:'立即预约', cancelBtn:'确认取消', back:'返回',
+    bookingFor:'预约人', bookingCancelled:'预约已取消。',
+    welcome:'欢迎', memberLogin:'会员登录',
+    enterYourPw:'请输入您的密码', unlock:'解锁',
+    wrongPw:'密码错误，请重试。',
+    noBookings:'尚无预约！点击「预约课程」开始预约。',
+    selectToSee:'请选择您的姓名以查看预约。',
+    loginToSee:'请输入密码以查看您的预约。',
+    upcoming:'即将到来', bokedSlot:'已预约', left:'剩余',
+    heroSub:'预约您的每周健身课程 — 功能性力量训练 & 舒展流动',
+    strength:'力量训练', stretch:'舒展流动',
+    miaOf:'缺席', logout:'退出',
+    exportTitle:'📥 导出每周课程表',
+    exportBtn:'📥 下载课程表 (PNG)',
+    rulesTitle:'📅 课程时间表',
+    batch:'第二批 · 仅限会员',
+  }
+};
+function t(key){ return T[currentLang][key] || T.en[key] || key; }
+function toggleLang(){
+  currentLang = currentLang==='en' ? 'zh' : 'en';
+  document.getElementById('langBtn').textContent = currentLang==='en' ? '中文' : 'ENG';
+  applyLang();
+  renderSchedule();
+  renderMyBookings();
+  updateNavMember();
+  updateUnlockBtn();
+  updateMiaBadge();
+}
+function applyLang(){
+  // Nav / hero
+  const heroSub = document.querySelector('.hero p');
+  if(heroSub) heroSub.textContent = t('heroSub');
+  const heroBadge = document.querySelector('.hero-badge');
+  if(heroBadge) heroBadge.textContent = t('batch');
+  // Member bar label
+  const memLabel = document.querySelector('.member-bar label');
+  if(memLabel) memLabel.textContent = '👤 '+t('selectMember');
+  // Member select placeholder
+  const sel = document.getElementById('memberSelect');
+  if(sel && sel.options[0]) sel.options[0].textContent = t('chooseYour');
+  // Tabs
+  const tabs = document.querySelectorAll('.tab');
+  const tabKeys = ['bookClass','myBookings','rules','admin'];
+  tabs.forEach((tab,i)=>{ if(tabKeys[i]) tab.textContent = t(tabKeys[i]); });
+  // Export section
+  const expTitle = document.querySelector('#adminPanel .admin-section:last-of-type h3');
+  const expBtn = document.querySelector('#adminPanel .admin-section:last-of-type button');
+}
+
+// ═══════════════════════════════════════════
+// BILINGUAL (EN / ZH)
+// ═══════════════════════════════════════════
+let lang = 'en';
+
+const TRANSLATIONS = {
+  en: {
+    thisWeek:'This Week', nextWeek:'Next Week',
+    selectMember:'👤 Select Member', chooseName:'— Choose your name —',
+    enterPw:'🔒 Enter Password', unlocked:'🔓 Unlocked',
+    bookClass:'📅 Book Class', myBookings:'🗓 My Bookings',
+    rules:'📋 Rules', admin:'🔑 Admin',
+    book:'Book', booked:'✓ Booked', cancel:'Cancel', past:'Past',
+    closed:'Closed', blocked:'Blocked', full:'Full', dayTaken:'Day taken',
+    loginFirst:'Select name', lockLogin:'🔒 Login',
+    upcoming:'Upcoming', noBookings:'No bookings yet! Tap Book Class to get started.',
+    selectFirst:'Select your name to see your bookings.',
+    loginToView:'Please enter your password to view your bookings.',
+    confirmBooking:'Confirm Booking', confirmCancel:'Cancel Booking',
+    bookNow:'Book Now', yesCancel:'Yes, Cancel', back:'Back',
+    welcomeMsg: (name) => `Welcome, ${name}! 🎉`,
+    wrongPw:'Wrong password. Try again.',
+    booked_toast: (t,d) => `✅ Booked! ${t} on ${d}`,
+    cancelled:'Booking cancelled.',
+    miaLabel: (c) => `${c}/3 MIA`,
+    noCancel:'No cancel', lockedLabel:'🔒 Locked',
+    bookingFor:'Booking for', at:'at',
+    cancelBooking:'Cancel booking',
+    fmtDay: (d) => d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}),
+    memberLogin:'Member Login', welcome:'Welcome,', unlock:'Unlock',
+    editPw:'✏️ Edit Password', savePw:'Save', cancelBtn:'Cancel',
+    noMIA:'No cancel within 1hr',
+  },
+  zh: {
+    thisWeek:'本周', nextWeek:'下周',
+    selectMember:'👤 选择会员', chooseName:'— 请选择您的姓名 —',
+    enterPw:'🔒 输入密码', unlocked:'🔓 已解锁',
+    bookClass:'📅 预约课程', myBookings:'🗓 我的预约',
+    rules:'📋 规则', admin:'🔑 管理',
+    book:'预约', booked:'✓ 已预约', cancel:'取消', past:'已过',
+    closed:'已截止', blocked:'已封锁', full:'已满', dayTaken:'当天已约',
+    loginFirst:'请选名字', lockLogin:'🔒 登录',
+    upcoming:'即将到来', noBookings:'暂无预约！点击"预约课程"开始。',
+    selectFirst:'请选择您的姓名以查看预约。',
+    loginToView:'请输入密码查看您的预约。',
+    confirmBooking:'确认预约', confirmCancel:'取消预约',
+    bookNow:'立即预约', yesCancel:'确认取消', back:'返回',
+    welcomeMsg: (name) => `欢迎，${name}！🎉`,
+    wrongPw:'密码错误，请重试。',
+    booked_toast: (t,d) => `✅ 预约成功！${d} ${t}`,
+    cancelled:'预约已取消。',
+    miaLabel: (c) => `${c}/3 缺席`,
+    noCancel:'无法取消', lockedLabel:'🔒 未解锁',
+    bookingFor:'预约人', at:'时间',
+    cancelBooking:'取消预约',
+    fmtDay: (d) => d.toLocaleDateString('zh-CN',{month:'numeric',day:'numeric',weekday:'short'}),
+    memberLogin:'会员登录', welcome:'欢迎，', unlock:'解锁',
+    editPw:'✏️ 修改密码', savePw:'保存', cancelBtn:'取消',
+    noMIA:'课前1小时内无法取消',
+  }
+};
+
+function t(key, ...args){
+  const val = TRANSLATIONS[lang][key];
+  if(typeof val === 'function') return val(...args);
+  return val || key;
+}
+
+function toggleLang(){
+  lang = lang === 'en' ? 'zh' : 'en';
+  document.getElementById('langToggle').textContent = lang === 'en' ? '中文' : 'EN';
+  applyLangToUI();
+  renderSchedule();
+  renderMyBookings();
+  updateMiaBadge();
+  updateUnlockBtn();
+  updateNavMember();
+}
+
+function applyLangToUI(){
+  // Member bar
+  document.querySelector('.member-bar label').textContent = t('selectMember');
+  const sel = document.getElementById('memberSelect');
+  if(sel.options[0]) sel.options[0].text = t('chooseName');
+  // Tabs
+  const tabs = document.querySelectorAll('.tab');
+  const tabKeys = ['bookClass','myBookings','rules','admin'];
+  tabs.forEach((tab,i) => { if(tabKeys[i]) tab.textContent = t(tabKeys[i]); });
+  // Nav lock status
+  if(currentMember) updateNavMember();
+}
 // ═══════════════════════════════════════════
 // START
 // ═══════════════════════════════════════════

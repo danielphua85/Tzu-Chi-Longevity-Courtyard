@@ -12,20 +12,6 @@
   /* Tzu-Chi navy palette */
   --jade:#1a3a6b;--jade2:#1e4d8c;--jade3:#4a7fc1;--jade-pale:#e8eef8;
   --gold:#b5843a;--gold-light:#e9c46a;--gold-pale:#fef9ec;
-  --ink:#0d1f3c;--ink2:<!DOCTYPE html>
-
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Longevity Courtyard – Batch 2</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  /* Tzu-Chi navy palette */
-  --jade:#1a3a6b;--jade2:#1e4d8c;--jade3:#4a7fc1;--jade-pale:#e8eef8;
-  --gold:#b5843a;--gold-light:#e9c46a;--gold-pale:#fef9ec;
   --ink:#0d1f3c;--ink2:#1a3254;--mid:#4a5a75;--soft:#8a99b5;--line:#dde4ef;
   --bg:#f4f6fb;--white:#ffffff;--danger:#c0392b;--warn:#e67e22;
   --shadow:rgba(13,31,60,0.12);--shadow2:rgba(13,31,60,0.22);
@@ -530,7 +516,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-h
     <p id="modalBody"></p>
     <div class="modal-btns">
       <button class="btn btn-outline btn-sm" style="width:auto;font-size:1rem;padding:.6rem 1.4rem;border:2px solid #1a3a6b;color:#1a3a6b;font-weight:700;background:#e8eef8" onclick="closeModal()">Back</button>
-      <button class="btn btn-jade btn-sm" id="modalConfirmBtn" style="width:auto;font-size:1.05rem;padding:.7rem 1.8rem;font-weight:800;background:#1a9e50;color:white;border:none;border-radius:8px;box-shadow:0 3px 10px rgba(26,158,80,.4)" onclick="executeAction()">Confirm</button>
+      <button class="btn btn-jade btn-sm" id="modalConfirmBtn" style="width:auto;font-size:1.05rem;padding:.7rem 1.8rem;font-weight:800;background:#1a9e50;color:white;border:none;border-radius:8px;box-shadow:0 3px 10px rgba(26,158,80,.4)" onclick="">Confirm</button>
     </div>
   </div>
 </div>
@@ -1102,22 +1088,19 @@ async function executeAction() {
   closeModal();
   if (!pendingAction) return;
   var a = pendingAction; pendingAction = null;
-  // Show loading indicator
-  showToast('⏳ Processing...', 'info');
   try {
     if (a.action === 'book') {
       var inserted = await dbInsert('bookings', { member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
-      // Optimistically add to local array so UI updates immediately
-      bookings.push({ id: inserted[0]?.id || null, member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
+      // Immediately update local data so UI reflects booking without waiting for server
+      bookings.push({ id: (inserted[0] ? inserted[0].id : null), member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
       renderSchedule(); renderMyBookings();
       showToast('✅ Booked! ' + timeLbl(a.tm) + ' on ' + fmtDate(parseYMD(a.ymd)), 'success');
-      // Then do a background refresh to sync with server
       await loadAll(); renderSchedule(); renderMyBookings();
 
     } else if (a.action === 'waitlist') {
       await dbInsert('waitlist', { member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
-      await loadAll(); renderSchedule(); renderMyBookings();
       showToast('⏳ Added to waitlist!', 'warn');
+      await loadAll(); renderSchedule(); renderMyBookings();
 
     } else if (a.action === 'cancel') {
       var bk = bookings.find(function(b) { return b.member === currentMember && b.date === a.ymd && b.time === a.tm; });
@@ -1137,10 +1120,8 @@ async function executeAction() {
       await loadAll(); renderSchedule(); renderMyBookings();
     }
   } catch(e) {
-    console.error('executeAction error:', e);
-    // Show error in a persistent alert so it cannot be missed
-    var errMsg = '❌ Booking failed!\n\nError: ' + e.message + '\n\nPlease screenshot this and send to your developer.';
-    alert(errMsg);
+    console.error('Booking error:', e);
+    alert('❌ Booking failed!\nError: ' + e.message + '\n\nPlease screenshot this.');
   }
 }
 
@@ -1672,13 +1653,13 @@ function dismissAnnounce() { document.getElementById('announceBanner').classList
 // ═══════════════════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════════════════
-function showToast(msg, type, duration) {
+function showToast(msg, type) {
   var old = document.querySelector('.toast'); if (old) old.remove();
   var el = document.createElement('div');
   el.className = 'toast toast-' + (type || 'success');
   el.textContent = msg;
   document.body.appendChild(el);
-  setTimeout(function() { el.remove(); }, duration || 3800);
+  setTimeout(function() { el.remove(); }, 3800);
 }
 
 // ═══════════════════════════════════════════════════════

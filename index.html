@@ -1091,8 +1091,13 @@ async function executeAction() {
   try {
     if (a.action === 'book') {
       await dbInsert('bookings', { member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
-      await loadAll(); renderSchedule(); renderMyBookings();
+      // Immediately update local array so UI shows "Booked" right away
+      // (Supabase eventual consistency means loadAll() right after INSERT may return stale data)
+      bookings.push({ id: null, member: currentMember, date: a.ymd, time: a.tm, classType: a.classType || '', classLabel: a.label || '' });
+      renderSchedule(); renderMyBookings();
       showToast('✅ Booked! ' + timeLbl(a.tm) + ' on ' + fmtDate(parseYMD(a.ymd)), 'success');
+      // Background sync after 1.5s to let Supabase commit the write
+      setTimeout(function() { loadAll().then(function() { renderSchedule(); renderMyBookings(); }); }, 1500);
 
     } else if (a.action === 'waitlist') {
       await dbInsert('waitlist', { member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });

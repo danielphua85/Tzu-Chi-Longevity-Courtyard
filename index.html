@@ -1092,7 +1092,7 @@ async function executeAction() {
     if (a.action === 'book') {
       var inserted = await dbInsert('bookings', { member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
       // Immediately update local data so UI reflects booking without waiting for server
-      bookings.push({ id: (inserted[0] ? inserted[0].id : null), member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
+      bookings.push({ id: (inserted && inserted[0] ? inserted[0].id : null), member: currentMember, date: a.ymd, time: a.tm, classType: a.classType, classLabel: a.label });
       renderSchedule(); renderMyBookings();
       showToast('✅ Booked! ' + timeLbl(a.tm) + ' on ' + fmtDate(parseYMD(a.ymd)), 'success');
       await loadAll(); renderSchedule(); renderMyBookings();
@@ -1119,10 +1119,7 @@ async function executeAction() {
       showToast(lang === 'zh' ? '已离开候补名单。' : 'Left the waitlist.', 'warn');
       await loadAll(); renderSchedule(); renderMyBookings();
     }
-  } catch(e) {
-    console.error('Booking error:', e);
-    alert('❌ Booking failed!\nError: ' + e.message + '\n\nPlease screenshot this.');
-  }
+  } catch(e) { console.error('Booking error:', e); showToast('❌ ' + e.message, 'error'); }
 }
 
 async function promoteFromWaitlist(ymd, tm, label, classType) {

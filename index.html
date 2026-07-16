@@ -184,6 +184,13 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-h
 .hero h1{font-size:1.4rem}.nav-logo{font-size:1rem}
 .chat-window{width:280px}.main{padding:1rem .8rem 5rem}
 }
+
+.admin-collapsible .admin-collapse-btn{width:100%;background:none;border:none;padding:0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-align:left}
+.admin-collapsible .admin-collapse-btn h3{margin:0;font-size:1rem;font-weight:700}
+.admin-collapsible .admin-collapse-arrow{font-size:1.2rem;transition:transform .25s;color:var(--jade)}
+.admin-collapsible.open .admin-collapse-arrow{transform:rotate(180deg)}
+.admin-collapse-body{display:none;margin-top:1rem}
+.admin-collapsible.open .admin-collapse-body{display:block}
 </style>
 
 </head>
@@ -418,14 +425,20 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-h
     <div id="blockList"></div>
   </div>
 
-  <div class="admin-section">
-    <h3>👥 Manage Members</h3>
+  <div class="admin-section admin-collapsible">
+    <button class="admin-collapse-btn" onclick="this.closest('.admin-collapsible').classList.toggle('open')">
+      <h3>👥 Manage Members</h3>
+      <span class="admin-collapse-arrow">▼</span>
+    </button>
+    <div class="admin-collapse-body">
     <div style="display:flex;gap:.7rem;margin-bottom:1rem;align-items:flex-end;flex-wrap:wrap">
       <div class="form-group" style="flex:1;min-width:140px;margin:0"><label>Name</label><input type="text" id="newMemberName" placeholder="Full name"></div>
       <div class="form-group" style="flex:1;min-width:140px;margin:0"><label>Password</label><input type="text" id="newMemberPw" placeholder="Set a password"></div>
       <button class="btn btn-jade btn-sm" style="width:auto;height:38px" onclick="addMember()">Add</button>
     </div>
     <div id="memberManageList"></div>
+  
+    </div>
   </div>
 
   <div class="admin-section">
@@ -468,8 +481,12 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-h
     <div id="bulkResults" style="max-height:280px;overflow-y:auto"></div>
   </div>
 
-  <div class="admin-section">
-    <h3>📋 All Member Bookings</h3>
+  <div class="admin-section admin-collapsible">
+    <button class="admin-collapse-btn" onclick="this.closest('.admin-collapsible').classList.toggle('open')">
+      <h3>📋 All Member Bookings</h3>
+      <span class="admin-collapse-arrow">▼</span>
+    </button>
+    <div class="admin-collapse-body">
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem">
       <select id="adminFilterMember" class="sel-style" style="width:auto" onchange="renderAdminBookings()"><option value="">All Members</option></select>
       <select id="adminFilterWeek" class="sel-style" style="width:auto" onchange="renderAdminBookings()">
@@ -478,16 +495,30 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);min-h
       <button class="btn btn-outline btn-sm" onclick="renderAdminBookings()" style="width:auto">🔄 Refresh</button>
     </div>
     <div id="adminBookingsTable" style="overflow-x:auto"></div>
+  
+    </div>
   </div>
 
-  <div class="admin-section">
-    <h3>⏳ Waitlist Overview</h3>
+  <div class="admin-section admin-collapsible">
+    <button class="admin-collapse-btn" onclick="this.closest('.admin-collapsible').classList.toggle('open')">
+      <h3>⏳ Waitlist Overview</h3>
+      <span class="admin-collapse-arrow">▼</span>
+    </button>
+    <div class="admin-collapse-body">
     <div id="adminWaitlistTable" style="overflow-x:auto"></div>
+  
+    </div>
   </div>
 
-  <div class="admin-section">
-    <h3>⚠️ MIA Tracker</h3>
+  <div class="admin-section admin-collapsible">
+    <button class="admin-collapse-btn" onclick="this.closest('.admin-collapsible').classList.toggle('open')">
+      <h3>⚠️ MIA Tracker</h3>
+      <span class="admin-collapse-arrow">▼</span>
+    </button>
+    <div class="admin-collapse-body">
     <div id="miaTable" style="overflow-x:auto"></div>
+  
+    </div>
   </div>
 
   <div class="admin-section">
@@ -746,10 +777,6 @@ function timeLbl(t) {
   return (h % 12 || 12) + ':' + String(m).padStart(2,'0') + (h < 12 ? 'am' : 'pm');
 }
 function timeLblNote(t, dow) {
-  // Only show batch labels on Tue (2) and Thu (4) — NOT Mon/Wed/Fri
-  if (dow !== 2 && dow !== 4) return '';
-  if (t === '14:30') return ' <span style="font-size:.65rem;color:var(--soft);font-weight:600">Batch 1&amp;2</span>';
-  if (t === '15:30') return ' <span style="font-size:.65rem;color:var(--gold);font-weight:600">Batch 1</span>';
   return '';
 }
 function slotDT(ymd, t) {

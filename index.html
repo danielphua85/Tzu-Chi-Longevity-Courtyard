@@ -803,13 +803,21 @@ function getDowInfoAll(dow) {
 // LOAD DATA
 // ═══════════════════════════════════════════════════════
 async function loadAll() {
+  // Only fetch bookings for this week + next week to avoid Supabase 1000-row limit
+  var today = new Date();
+  var dayOfWeek = today.getDay() === 0 ? 7 : today.getDay();
+  var monday = new Date(today); monday.setDate(today.getDate() - dayOfWeek + 1);
+  var sunday2 = new Date(monday); sunday2.setDate(monday.getDate() + 13);
+  var dateFrom = monday.toISOString().slice(0,10);
+  var dateTo   = sunday2.toISOString().slice(0,10);
+
   var results = await Promise.all([
     dbGet('members',       '*', 'order=name'),
-    dbGet('bookings',      '*'),
+    dbGet('bookings',      '*', 'date=gte.' + dateFrom + '&date=lte.' + dateTo + '&order=created_at.desc'),
     dbGet('mia_records',   '*'),
     dbGet('blocked_slots', '*'),
     dbGet('announcements', '*', 'order=created_at.desc'),
-    dbGet('waitlist',      '*', 'order=created_at.asc'),
+    dbGet('waitlist',      '*', 'date=gte.' + dateFrom + '&date=lte.' + dateTo + '&order=created_at.asc'),
   ]);
 
   members      = results[0].map(function(r) { return { name: r.name, password: r.password || '' }; });

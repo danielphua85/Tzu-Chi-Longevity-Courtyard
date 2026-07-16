@@ -1106,9 +1106,13 @@ async function executeAction() {
   showToast('⏳ Processing...', 'info');
   try {
     if (a.action === 'book') {
-      await dbInsert('bookings', { member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
-      await loadAll(); renderSchedule(); renderMyBookings();
+      var inserted = await dbInsert('bookings', { member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
+      // Optimistically add to local array so UI updates immediately
+      bookings.push({ id: inserted[0]?.id || null, member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
+      renderSchedule(); renderMyBookings();
       showToast('✅ Booked! ' + timeLbl(a.tm) + ' on ' + fmtDate(parseYMD(a.ymd)), 'success');
+      // Then do a background refresh to sync with server
+      await loadAll(); renderSchedule(); renderMyBookings();
 
     } else if (a.action === 'waitlist') {
       await dbInsert('waitlist', { member: currentMember, date: a.ymd, time: a.tm, class_type: a.classType, class_label: a.label });
@@ -1132,7 +1136,12 @@ async function executeAction() {
       showToast(lang === 'zh' ? '已离开候补名单。' : 'Left the waitlist.', 'warn');
       await loadAll(); renderSchedule(); renderMyBookings();
     }
-  } catch(e) { showToast('❌ Error: ' + e.message, 'error', 8000); console.error('executeAction error:', e); }
+  } catch(e) {
+    console.error('executeAction error:', e);
+    // Show error in a persistent alert so it cannot be missed
+    var errMsg = '❌ Booking failed!\n\nError: ' + e.message + '\n\nPlease screenshot this and send to your developer.';
+    alert(errMsg);
+  }
 }
 
 async function promoteFromWaitlist(ymd, tm, label, classType) {
